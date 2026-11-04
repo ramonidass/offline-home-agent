@@ -1,0 +1,21 @@
+[Unit]
+Description=ntfy push server
+
+[Container]
+ContainerName=ntfy
+# Pinned; newer releases: github.com/binwiederhier/ntfy/releases
+Image=docker.io/binwiederhier/ntfy:v2.28.0
+Exec=serve
+# Internal network only: no way out. Your phone reaches it through Caddy on port 8090.
+Network=agent.network
+Volume=%h/agent/ntfy/etc:/etc/ntfy:Z
+Volume=%h/agent/ntfy/cache:/var/cache/ntfy:Z
+Volume=%h/agent/ntfy/lib:/var/lib/ntfy:Z
+NoNewPrivileges=true
+DropCapability=all
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

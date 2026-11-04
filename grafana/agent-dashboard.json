@@ -1,0 +1,710 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_AGENT_STATS",
+      "label": "Agent stats (SQLite)",
+      "type": "datasource",
+      "pluginId": "frser-sqlite-datasource",
+      "pluginName": "SQLite"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "datasource",
+      "id": "frser-sqlite-datasource",
+      "name": "SQLite",
+      "version": "4.0.0"
+    }
+  ],
+  "title": "Agent",
+  "uid": "agent-stats",
+  "tags": [
+    "agent"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "15m",
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Triage last OK",
+      "description": "Minutes since the last successful triage run, when the stats were exported.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_AGENT_STATS}"
+          },
+          "queryText": "SELECT minutes_since_ok FROM health",
+          "rawQueryText": "SELECT minutes_since_ok FROM health",
+          "queryType": "table"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "m",
+          "noValue": "\u2013",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 30
+              },
+              {
+                "color": "red",
+                "value": 120
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "id": 1,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_AGENT_STATS}"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Failed runs in a row",
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_AGENT_STATS}"
+          },
+          "queryText": "SELECT fails FROM health",
+          "rawQueryText": "SELECT fails FROM health",
+          "queryType": "table"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "noValue": "\u2013",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "id": 2,
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_AGENT_STATS}"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Emails today",
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_AGENT_STATS}"
+          },
+          "queryText": "SELECT COALESCE(SUM(emails), 0) FROM email_daily WHERE day = date('now')",
+          "rawQueryText": "SELECT COALESCE(SUM(emails), 0) FROM email_daily WHERE day = date('now')",
+          "queryType": "table"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "noValue": "\u2013",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "id": 3,
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_AGENT_STATS}"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Pushes today",
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_AGENT_STATS}"
+          },
+          "queryText": "SELECT COALESCE(SUM(pushes), 0) FROM push_daily WHERE day = date('now')",
+          "rawQueryText": "SELECT COALESCE(SUM(pushes), 0) FROM push_daily WHERE day = date('now')",
+          "queryType": "table"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "noValue": "\u2013",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "id": 4,
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_AGENT_STATS}"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Emails per day, by category",
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_AGENT_STATS}"
+          },
+          "queryText": "SELECT time,\n  SUM(CASE WHEN category = 'urgent' THEN emails ELSE 0 END) AS urgent,\n  SUM(CASE WHEN category = 'work' THEN emails ELSE 0 END) AS work,\n  SUM(CASE WHEN category = 'personal' THEN emails ELSE 0 END) AS personal,\n  SUM(CASE WHEN category = 'purchase' THEN emails ELSE 0 END) AS purchase,\n  SUM(CASE WHEN category = 'unsure' THEN emails ELSE 0 END) AS unsure,\n  SUM(CASE WHEN category = 'info' THEN emails ELSE 0 END) AS info,\n  SUM(CASE WHEN category = 'ads' THEN emails ELSE 0 END) AS ads\nFROM email_daily\nWHERE time >= $__from / 1000 AND time <= $__to / 1000\nGROUP BY time ORDER BY time",
+          "rawQueryText": "SELECT time,\n  SUM(CASE WHEN category = 'urgent' THEN emails ELSE 0 END) AS urgent,\n  SUM(CASE WHEN category = 'work' THEN emails ELSE 0 END) AS work,\n  SUM(CASE WHEN category = 'personal' THEN emails ELSE 0 END) AS personal,\n  SUM(CASE WHEN category = 'purchase' THEN emails ELSE 0 END) AS purchase,\n  SUM(CASE WHEN category = 'unsure' THEN emails ELSE 0 END) AS unsure,\n  SUM(CASE WHEN category = 'info' THEN emails ELSE 0 END) AS info,\n  SUM(CASE WHEN category = 'ads' THEN emails ELSE 0 END) AS ads\nFROM email_daily\nWHERE time >= $__from / 1000 AND time <= $__to / 1000\nGROUP BY time ORDER BY time",
+          "queryType": "time series",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          },
+          "unit": "none",
+          "min": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "urgent"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "work"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "personal"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "purchase"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "unsure"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "info"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3c7a86"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ads"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8d94"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "id": 5,
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 9
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_AGENT_STATS}"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Sorted by your rules vs the model",
+      "description": "More rules = fewer guesses. A growing 'model' share means it's worth adding rules.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_AGENT_STATS}"
+          },
+          "queryText": "SELECT time,\n  SUM(CASE WHEN sorted_by = 'rule' THEN emails ELSE 0 END) AS rule,\n  SUM(CASE WHEN sorted_by = 'model' THEN emails ELSE 0 END) AS model\nFROM email_daily\nWHERE time >= $__from / 1000 AND time <= $__to / 1000\nGROUP BY time ORDER BY time",
+          "rawQueryText": "SELECT time,\n  SUM(CASE WHEN sorted_by = 'rule' THEN emails ELSE 0 END) AS rule,\n  SUM(CASE WHEN sorted_by = 'model' THEN emails ELSE 0 END) AS model\nFROM email_daily\nWHERE time >= $__from / 1000 AND time <= $__to / 1000\nGROUP BY time ORDER BY time",
+          "queryType": "time series",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          },
+          "unit": "none",
+          "min": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "rule"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "model"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "yellow"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "id": 6,
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_AGENT_STATS}"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Pushes per day",
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_AGENT_STATS}"
+          },
+          "queryText": "SELECT time, SUM(pushes) AS pushes FROM push_daily WHERE time >= $__from / 1000 AND time <= $__to / 1000 GROUP BY time ORDER BY time",
+          "rawQueryText": "SELECT time, SUM(pushes) AS pushes FROM push_daily WHERE time >= $__from / 1000 AND time <= $__to / 1000 GROUP BY time ORDER BY time",
+          "queryType": "time series",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          },
+          "unit": "none",
+          "min": 0
+        },
+        "overrides": []
+      },
+      "id": 7,
+      "gridPos": {
+        "x": 12,
+        "y": 13,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_AGENT_STATS}"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Triage runs per day",
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_AGENT_STATS}"
+          },
+          "queryText": "SELECT time, SUM(ok_runs) AS ok, SUM(failed_runs) AS failed FROM triage_daily WHERE time >= $__from / 1000 AND time <= $__to / 1000 GROUP BY time ORDER BY time",
+          "rawQueryText": "SELECT time, SUM(ok_runs) AS ok, SUM(failed_runs) AS failed FROM triage_daily WHERE time >= $__from / 1000 AND time <= $__to / 1000 GROUP BY time ORDER BY time",
+          "queryType": "time series",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          },
+          "unit": "none",
+          "min": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ok"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "id": 8,
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_AGENT_STATS}"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Filed quietly by the model, per day",
+      "description": "Emails the model sorted as info or ads (no push). If this jumps, check the digest.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_AGENT_STATS}"
+          },
+          "queryText": "SELECT day AS Day, SUM(quiet) AS 'Filed quietly', SUM(emails) AS 'All emails' FROM email_daily GROUP BY day ORDER BY day DESC LIMIT 30",
+          "rawQueryText": "SELECT day AS Day, SUM(quiet) AS 'Filed quietly', SUM(emails) AS 'All emails' FROM email_daily GROUP BY day ORDER BY day DESC LIMIT 30",
+          "queryType": "table"
+        }
+      ],
+      "options": {
+        "showHeader": true
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "id": 9,
+      "gridPos": {
+        "x": 12,
+        "y": 21,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_AGENT_STATS}"
+      }
+    }
+  ]
+}

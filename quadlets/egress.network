@@ -1,0 +1,2 @@
+# Normal network: only for containers that must reach the internet or publish a port.
+[Network]

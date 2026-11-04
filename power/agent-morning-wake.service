@@ -1,0 +1,6 @@
+[Unit]
+Description=Wake the server for the morning jobs (agent setup)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/true

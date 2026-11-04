@@ -1,0 +1,11 @@
+[Unit]
+Description=Ports 8090 (ntfy) and 8088 (agent page), handed to Caddy
+
+[Socket]
+# systemd opens the ports on the host and passes them to the Caddy container,
+# so Caddy needs no internet-capable network. Order matters: fd/3 = 8090, fd/4 = 8088.
+ListenStream=0.0.0.0:8090
+ListenStream=0.0.0.0:8088
+
+[Install]
+WantedBy=sockets.target

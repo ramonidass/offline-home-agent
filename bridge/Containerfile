@@ -1,0 +1,13 @@
+# Proton Mail Bridge, installed from Proton's own RPM after checking Proton's signature.
+# Put bridge_pubkey.gpg and the downloaded RPM (renamed protonmail-bridge.rpm) next to this file.
+FROM registry.fedoraproject.org/fedora:latest
+
+COPY bridge_pubkey.gpg protonmail-bridge.rpm /tmp/
+RUN rpm --import /tmp/bridge_pubkey.gpg \
+ && rpm --checksig /tmp/protonmail-bridge.rpm | grep -q "digests signatures OK" \
+ && dnf -y install /tmp/protonmail-bridge.rpm pass gnupg2 socat \
+ && dnf clean all \
+ && rm -f /tmp/protonmail-bridge.rpm
+
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]

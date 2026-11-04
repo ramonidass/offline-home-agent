@@ -1,0 +1,33 @@
+[Unit]
+Description=Email triage (one run)
+Wants=protonmail-bridge.service hydroxide.service ollama.service ntfy.service
+After=protonmail-bridge.service hydroxide.service ollama.service ntfy.service
+
+[Container]
+ContainerName=email-triage
+Image=agent-jobs.build
+Exec=/app/triage.py
+# Internal network only: this container cannot reach the internet.
+Network=agent.network
+UserNS=keep-id
+ReadOnly=true
+NoNewPrivileges=true
+DropCapability=all
+Volume=%h/agent/state/email:/state:z
+Environment=EMAIL_AGENT_HOME=/state MODEL=qwen3.5:9b
+Environment=BRIDGE_HOST=protonmail-bridge BRIDGE_PORT=1144 BRIDGE_USER=you@proton.me
+# Using hydroxide (option B)? Uncomment:
+# Environment=IMAP_SECURITY=ssl LABEL_MODE=flag BRIDGE_CERT=/tls/cert.pem
+# Volume=%h/agent/hydroxide/tls/cert.pem:/tls/cert.pem:ro,z
+Environment=OLLAMA_URL=http://ollama:11434/api/chat NTFY_URL=http://ntfy:8080/email-agent
+# Agent page and Grafana stats (agent.db -> web/data.json and stats/agent-stats.db)
+Volume=%h/agent/data:/data:z
+Environment=AGENT_DB=/data/agent.db AGENT_WEB_DIR=/data/web AGENT_STATS_DIR=/data/stats
+# Tapping a push opens the agent page:
+# Environment=AGENT_PUSH_LINK=http://K8-LAN-IP:8088/
+Secret=bridge-pass,type=env,target=BRIDGE_PASSWORD
+Secret=ntfy-token,type=env,target=NTFY_TOKEN
+
+[Service]
+Type=oneshot
+TimeoutStartSec=45min

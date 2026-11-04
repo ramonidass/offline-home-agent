@@ -1,0 +1,40 @@
+# The only way in. Plain HTTP: WireGuard already encrypts the phone's traffic, and the
+# firewall only lets WireGuard in. The ports are opened by caddy.socket
+# (systemd) and passed in as fd/3 and fd/4, so this container has no internet access.
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+http://:8090 {
+	bind fd/3 {
+		protocols h1
+	}
+	reverse_proxy ntfy:8080
+}
+
+# The agent page: brief, emails, pushes. The firewall lets only your own devices reach 8088.
+# Static files only; the page can run nothing but its own app.js.
+http://:8088 {
+	bind fd/4 {
+		protocols h1
+	}
+	header {
+		Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		Cache-Control no-store
+	}
+	@manifest path /manifest.webmanifest
+	header @manifest Content-Type application/manifest+json
+	@data path /data.json /mail/*
+	handle @data {
+		root * /srv/agent-data
+		file_server
+	}
+	handle {
+		root * /srv/agent-site
+		file_server
+	}
+}

@@ -1,0 +1,14 @@
+# hydroxide: third-party, open-source Proton bridge (MIT), built from source at a commit you chose.
+#   podman build --build-arg COMMIT=<full commit hash> -t localhost/hydroxide:latest ~/agent/hydroxide
+FROM docker.io/library/golang:1.26 AS build
+ARG COMMIT
+RUN test -n "$COMMIT" \
+ && git clone https://codeberg.org/emersion/hydroxide.git /src \
+ && cd /src && git checkout --detach "$COMMIT" \
+ && CGO_ENABLED=0 go build -trimpath -o /out/hydroxide ./cmd/hydroxide
+# go build checks every dependency against go.sum, so a tampered library fails the build.
+
+# Runtime: no shell, no package manager, just the binary and CA certificates.
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /out/hydroxide /usr/local/bin/hydroxide
+ENTRYPOINT ["/usr/local/bin/hydroxide"]

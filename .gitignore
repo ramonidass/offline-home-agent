@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+# Runtime data and secrets never belong in the repo
+*.db
+*.db-journal
+*.pem
+*.jsonl
+data/
+state.json
+health.json
+.env

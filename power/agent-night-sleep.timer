@@ -1,0 +1,14 @@
+[Unit]
+Description=Suspend the server at 00:30 (retries every 30 minutes until 03:00)
+
+[Timer]
+OnCalendar=*-*-* 00:30
+OnCalendar=*-*-* 01:00
+OnCalendar=*-*-* 01:30
+OnCalendar=*-*-* 02:00
+OnCalendar=*-*-* 02:30
+OnCalendar=*-*-* 03:00
+# No Persistent=: a missed night must never suspend the machine later in the day.
+
+[Install]
+WantedBy=timers.target

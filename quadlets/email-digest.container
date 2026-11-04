@@ -1,0 +1,25 @@
+[Unit]
+Description=Email digest push (one run)
+Wants=ntfy.service
+After=ntfy.service
+
+[Container]
+ContainerName=email-digest
+Image=agent-jobs.build
+Exec=/app/triage.py --digest
+Network=agent.network
+UserNS=keep-id
+ReadOnly=true
+NoNewPrivileges=true
+DropCapability=all
+Volume=%h/agent/state/email:/state:z
+Environment=EMAIL_AGENT_HOME=/state NTFY_URL=http://ntfy:8080/email-agent
+# Agent page and Grafana stats (agent.db -> web/data.json and stats/agent-stats.db)
+Volume=%h/agent/data:/data:z
+Environment=AGENT_DB=/data/agent.db AGENT_WEB_DIR=/data/web AGENT_STATS_DIR=/data/stats
+# Tapping a push opens the agent page:
+# Environment=AGENT_PUSH_LINK=http://K8-LAN-IP:8088/
+Secret=ntfy-token,type=env,target=NTFY_TOKEN
+
+[Service]
+Type=oneshot

@@ -1,0 +1,14 @@
+[Unit]
+Description=Suspend the server for the night (agent setup)
+
+[Service]
+Type=oneshot
+# Only between 00:30 and 03:30: timers that came due while asleep fire on resume at 07:30,
+# and must not suspend the machine again. A program blocking sleep (a playing video, or
+# "systemd-inhibit --what=sleep sleep 2h" to stay up late) skips this try; the timer retries.
+# --ignore-inhibitors is needed because the plain check also refuses whenever you are logged in.
+ExecStart=/bin/sh -c 'now=$(date +%%H%%M); \
+  if [ "$now" -lt 0030 ] || [ "$now" -gt 0330 ]; then echo "Not night ($now): not suspending."; exit 0; fi; \
+  if systemd-inhibit --list --mode=block --no-legend --no-pager | grep -qw sleep; then \
+    echo "Sleep is blocked, trying again in 30 minutes:"; systemd-inhibit --list --mode=block --no-pager; exit 0; fi; \
+  exec systemctl suspend --ignore-inhibitors'

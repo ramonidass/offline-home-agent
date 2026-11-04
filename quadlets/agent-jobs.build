@@ -1,0 +1,4 @@
+[Build]
+ImageTag=localhost/agent-jobs:latest
+File=%h/agent/agent-jobs/Containerfile
+SetWorkingDirectory=file

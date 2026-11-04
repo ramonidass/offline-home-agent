@@ -1,0 +1,4 @@
+[Build]
+ImageTag=localhost/protonmail-bridge:latest
+File=%h/agent/bridge/Containerfile
+SetWorkingDirectory=file

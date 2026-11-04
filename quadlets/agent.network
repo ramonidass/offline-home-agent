@@ -1,0 +1,3 @@
+# Internal network: containers can talk to each other, nothing on it can reach the internet.
+[Network]
+Internal=true

@@ -1,0 +1,31 @@
+[Unit]
+Description=Ollama model server
+
+[Container]
+ContainerName=ollama
+# Pinned; newer releases: github.com/ollama/ollama/releases
+Image=docker.io/ollama/ollama:0.40.11
+# egress only so you can pull models; remove that line afterwards if you like.
+Network=egress.network
+Network=agent.network
+Volume=ollama-models:/root/.ollama
+Environment=OLLAMA_MAX_LOADED_MODELS=1 OLLAMA_NUM_PARALLEL=1 OLLAMA_CONTEXT_LENGTH=8192
+Environment=OLLAMA_FLASH_ATTENTION=1 OLLAMA_KV_CACHE_TYPE=q8_0 OLLAMA_KEEP_ALIVE=5m
+# Hard RAM cap for the model server (works on any Podman version)
+PodmanArgs=--memory=9500m
+# GPU, for later (SETUP.md: "Later — CPU vs GPU test"). Uncomment the three lines and run once:
+#   sudo setsebool -P container_use_devices=true
+# The cap above then no longer limits the model, which sits in GPU memory.
+# AddDevice=/dev/dri
+# GroupAdd=keep-groups
+# Environment=OLLAMA_VULKAN=1
+NoNewPrivileges=true
+DropCapability=all
+
+[Service]
+# First start downloads a large image; the default timeout is too short for that.
+TimeoutStartSec=900
+Restart=always
+
+[Install]
+WantedBy=default.target

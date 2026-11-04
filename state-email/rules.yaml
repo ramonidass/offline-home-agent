@@ -1,0 +1,37 @@
+actions:
+  urgent:   {notify: now,    label: "AI-Urgent"}
+  work:     {notify: now,    label: "AI-Work"}
+  jobs:     {notify: digest}
+  purchase: {notify: now,    label: "AI-Purchase"}
+  personal: {notify: now,    label: "AI-Personal"}
+  info:     {notify: none,   label: "AI-Info"}
+  ads:      {notify: none,   label: "AI-Ads"}
+  unsure:   {notify: digest, label: "AI-Unsure"}
+
+rules:
+  - name: People who always matter
+    from: ["someone@example.com"]
+    category: urgent
+  - name: Work domain
+    from_domain: ["yourcompany.com"]
+    category: work
+  - name: Back in stock
+    subject_any: ["back in stock", "now available", "restocked"]
+    category: urgent
+  - name: Security alerts
+    subject_any: ["new sign-in", "password was changed", "unusual activity"]
+    category: urgent
+  - name: Deliveries
+    subject_any: ["has shipped", "out for delivery", "delivered", "refund"]
+    category: purchase
+  - name: Known newsletters
+    from_domain: ["news.example-shop.com"]
+    category: ads
+
+model_hints:
+  work: "written to me personally by an employer, colleague or recruiter, or a step in one of my job applications (offer, interview, background check)"
+  jobs: "automated job alerts, job board listings and recruiting newsletters sent to many people"
+  purchase: "an order, delivery, refund, bill, receipt or price drop"
+  personal: "written by an individual person to me, not a company"
+  info: "an account, service, appointment or statement notice from a company"
+  ads: "marketing, promotion or newsletter"

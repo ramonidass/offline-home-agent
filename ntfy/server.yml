@@ -1,0 +1,6 @@
+base-url: "http://K8-LAN-IP:8090"
+listen-http: ":8080"
+cache-file: "/var/cache/ntfy/cache.db"
+auth-file: "/var/lib/ntfy/user.db"
+auth-default-access: "deny-all"
+behind-proxy: true

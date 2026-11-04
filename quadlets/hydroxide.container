@@ -1,0 +1,29 @@
+# Option B: hydroxide instead of Proton's official Bridge. Install this OR
+# protonmail-bridge.container, never both (they use the same container name).
+[Unit]
+Description=hydroxide (third-party Proton bridge, IMAP only)
+Wants=egress-proxy.service
+After=egress-proxy.service
+
+[Container]
+# Same name as the official Bridge, so the jobs need no other changes.
+ContainerName=protonmail-bridge
+Image=localhost/hydroxide:latest
+# IMAP only (no SMTP, so nothing can send mail), TLS with your own certificate.
+Exec=-imap-host 0.0.0.0 -imap-port 1144 -tls-cert /tls/cert.pem -tls-key /tls/key.pem imap
+# Internal network only: its one way out is the allowlist proxy, which only allows Proton.
+Network=agent.network
+Environment=HTTPS_PROXY=http://egress-proxy:3128
+# Maps your user to the image's "nonroot" user, so it can use your folders and nothing else.
+UserNS=keep-id:uid=65532,gid=65532
+Volume=%h/agent/hydroxide/config:/home/nonroot/.config:Z
+Volume=%h/agent/hydroxide/tls:/tls:ro,z
+ReadOnly=true
+NoNewPrivileges=true
+DropCapability=all
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

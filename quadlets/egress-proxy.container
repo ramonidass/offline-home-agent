@@ -1,0 +1,17 @@
+[Unit]
+Description=Allowlist proxy: the mail bridge may reach Proton and nothing else
+
+[Container]
+ContainerName=egress-proxy
+# Canonical's Squid image; pin a current tag from hub.docker.com/r/ubuntu/squid
+Image=docker.io/ubuntu/squid:6.6-24.04_beta
+Network=egress.network
+Network=agent.network
+Volume=%h/agent/egress-proxy/squid.conf:/etc/squid/squid.conf:ro,Z
+NoNewPrivileges=true
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

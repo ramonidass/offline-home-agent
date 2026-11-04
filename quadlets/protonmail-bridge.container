@@ -1,0 +1,21 @@
+[Unit]
+Description=Proton Mail Bridge (official)
+Wants=egress-proxy.service
+After=egress-proxy.service
+
+[Container]
+ContainerName=protonmail-bridge
+Image=protonmail-bridge.build
+# Internal network only; Proton is reached through the allowlist proxy.
+# If its logs show it can't reach Proton (it may ignore HTTPS_PROXY), add Network=egress.network.
+Network=agent.network
+Environment=HTTPS_PROXY=http://egress-proxy:3128
+Volume=protonmail-bridge-data:/root
+NoNewPrivileges=true
+DropCapability=all
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

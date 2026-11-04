@@ -1,0 +1,44 @@
+[Unit]
+Description=Morning brief (one run)
+Wants=ollama.service
+After=ollama.service
+
+[Container]
+ContainerName=morning-brief
+Image=agent-jobs.build
+Exec=/app/brief.py
+Network=agent.network
+UserNS=keep-id
+ReadOnly=true
+NoNewPrivileges=true
+DropCapability=all
+# Read-only inputs; the only writable folder is where brief.md goes.
+Volume=%h/Sync/calendar:/calendar:ro,z
+Volume=%h/agent/extra-calendars:/extra:ro,Z
+Volume=%h/Obsidian/Tasks:/tasks:ro,z
+Volume=%h/Sync/timetracker:/time:ro,z
+Volume=%h/agent/data:/out:z
+# Read-only: email health warnings, and the mail waiting for the digest.
+Volume=%h/agent/state/email:/email:ro,z
+Environment=CAL_DIR=/calendar EXTRA_ICS_DIR=/extra TODO_FILES=/tasks/To-do.md BRIEF_FILE=/out/brief.md
+Environment=EMAIL_HEALTH=/email/health.json
+# Agent page and Grafana stats (/out is ~/agent/data, shared with the email jobs)
+Environment=AGENT_DB=/out/agent.db AGENT_WEB_DIR=/out/web AGENT_STATS_DIR=/out/stats
+# Tapping the brief push opens the agent page:
+# Environment=AGENT_PUSH_LINK=http://K8-LAN-IP:8088/
+# Lists mail waiting for the digest (read-only: the 08:00 digest still sends and clears it).
+Environment=EMAIL_IN_BRIEF=yes EMAIL_DIGEST=/email/digest.jsonl EMAIL_CONSUME=no
+Environment=TIME_DIR=/time TZ_NAME=Europe/London LOOKAHEAD_DAYS=7 LATER_DAYS=45
+# Old time-tracker activities folded into new ones (old=new:tag added), e.g. after merging:
+# Environment="TIME_ACTIVITY_MAP=Calisthenics=Exercise; Sport/Gym=Exercise"
+# Old tag names shown under their new name:
+# Environment="TIME_TAG_MAP=Sport/Gym=Gym"
+# The local model writes the Summary bullets; delete the next line to skip it.
+Environment=OLLAMA_URL=http://ollama:11434/api/chat MODEL=qwen3.5:9b
+# Optional push of the brief to your phone:
+# Environment=NTFY_URL=http://ntfy:8080/brief
+# Secret=ntfy-token,type=env,target=NTFY_TOKEN
+
+[Service]
+Type=oneshot
+TimeoutStartSec=15min

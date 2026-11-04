@@ -1,0 +1,31 @@
+[Unit]
+Description=Caddy: the only door in (ntfy on 8090, agent page on 8088)
+# The ports come from caddy.socket (socket activation), not from PublishPort.
+Requires=caddy.socket
+After=caddy.socket
+
+[Container]
+ContainerName=caddy
+# Pinned; newer tags: hub.docker.com/_/caddy
+Image=docker.io/library/caddy:2.11.7
+# Internal network only: no way out. Caddy holds no data: it only passes requests
+# from the ports systemd hands it (caddy.socket) to the two containers below,
+# and serves the agent page (read-only files).
+Network=agent.network
+Volume=%h/agent/caddy/Caddyfile:/etc/caddy/Caddyfile:ro,Z
+# The agent page: its files, and the data.json the jobs rebuild after every run.
+Volume=%h/agent/site:/srv/agent-site:ro,Z
+Volume=%h/agent/data/web:/srv/agent-data:ro,z
+Volume=caddy-data:/data
+Tmpfs=/config
+ReadOnly=true
+NoNewPrivileges=true
+DropCapability=all
+# The caddy binary carries this file capability; without it, it refuses to start.
+AddCapability=NET_BIND_SERVICE
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

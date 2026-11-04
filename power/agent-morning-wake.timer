@@ -1,0 +1,10 @@
+[Unit]
+Description=Wake the server from suspend at 07:30
+
+[Timer]
+OnCalendar=*-*-* 07:30
+# Programs the hardware clock to wake the machine; the user timers (triage, brief) then catch up.
+WakeSystem=true
+
+[Install]
+WantedBy=timers.target

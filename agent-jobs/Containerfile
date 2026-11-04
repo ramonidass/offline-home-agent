@@ -1,0 +1,11 @@
+# Email triage + morning brief. Plain Python, pinned libraries, nothing else.
+FROM docker.io/library/python:3.13-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir --no-deps -r /app/requirements.txt
+COPY triage.py brief.py agentdb.py /app/
+
+# Runs as your own user (UserNS=keep-id in the unit files); nothing here needs root.
+WORKDIR /app
+ENTRYPOINT ["python"]
